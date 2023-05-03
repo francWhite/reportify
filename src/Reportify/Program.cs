@@ -1,10 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Reportify.Commands;
+using Reportify.Configuration;
 using Reportify.Infrastructure;
 using Reportify.Report;
 using Spectre.Console.Cli;
 
+var config = new ConfigurationBuilder()
+  .AddJsonFile("reportify.config.json")
+  .Build();
+
 var services = new ServiceCollection()
+  .Configure<ReportifyOptions>(config)
   .AddSingleton<ICreateReportCommand, CreateReportCommand>();
 
 var registrar = new TypeRegistrar(services);
