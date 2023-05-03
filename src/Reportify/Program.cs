@@ -1,3 +1,13 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using Microsoft.Extensions.DependencyInjection;
+using Reportify.Commands;
+using Reportify.Infrastructure;
+using Reportify.Report;
+using Spectre.Console.Cli;
 
-Console.WriteLine("Hello, World!");
+var services = new ServiceCollection()
+  .AddSingleton<ICreateReportCommand, CreateReportCommand>();
+
+var registrar = new TypeRegistrar(services);
+var app = new CommandApp<ReportCommand>(registrar);
+
+return await app.RunAsync(args);

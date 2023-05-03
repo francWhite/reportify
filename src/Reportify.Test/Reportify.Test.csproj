@@ -22,4 +22,8 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Reportify\Reportify.csproj" />
+    </ItemGroup>
+
 </Project>
