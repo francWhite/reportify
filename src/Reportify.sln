@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reportify", "Reportify\Reportify.csproj", "{02825647-4AC1-43E1-B7A8-24C3C6146AC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reportify.Test", "Reportify.Test\Reportify.Test.csproj", "{4B85A0C6-8FDC-48B5-9A35-B8C60252584F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reportify.Tests", "Reportify.Tests\Reportify.Tests.csproj", "{4B85A0C6-8FDC-48B5-9A35-B8C60252584F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

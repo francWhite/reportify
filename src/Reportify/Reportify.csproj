@@ -14,6 +14,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <InternalsVisibleTo Include="Reportify.Test" />
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 </Project>
