@@ -1,7 +1,6 @@
-using FluentAssertions;
 using Reportify.Commands;
 
-namespace Reportify.Test;
+namespace Reportify.Tests.Commands;
 
 public class ReportCommandSettingsTest
 {

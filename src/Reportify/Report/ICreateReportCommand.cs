@@ -3,5 +3,5 @@ namespace Reportify.Report;
 internal interface ICreateReportCommand
 {
   Task CreateForDateAsync(DateOnly date);
-  Task CreateForWeekAsync();
+  Task CreateForDateRangeAsync(DateOnly startDate, DateOnly endDate);
 }

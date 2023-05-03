@@ -10,20 +10,9 @@ internal class CreateReportCommand : ICreateReportCommand
     return Task.CompletedTask;
   }
 
-  public Task CreateForWeekAsync()
+  public Task CreateForDateRangeAsync(DateOnly startDate, DateOnly endDate)
   {
-    var (startDate, endDate) = BuildCurrentWeekRange();
-
-    AnsiConsole.MarkupLine($"[green]Report for current week, from:[/] {startDate} [green]to:[/] {endDate}");
+    AnsiConsole.MarkupLine($"[green]Report for week, from:[/] {startDate} [green]to:[/] {endDate}");
     return Task.CompletedTask;
-  }
-
-  private static (DateOnly startDate, DateOnly endDate) BuildCurrentWeekRange()
-  {
-    var today = DateOnly.FromDateTime(DateTime.Today);
-    var startDate = today.AddDays(-(int)today.DayOfWeek + 1);
-    var endDate = startDate.AddDays(6);
-
-    return (startDate, endDate);
   }
 }

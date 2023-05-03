@@ -20,8 +20,10 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
 
   private Task CreateReportAsync(ReportCommandSettings settings)
   {
+    var today = DateOnly.FromDateTime(DateTime.Now);
+
     return settings.EntireWeek
-      ? _createReportCommand.CreateForWeekAsync()
-      : _createReportCommand.CreateForDateAsync(settings.Date ?? DateOnly.FromDateTime(DateTime.Now));
+      ? _createReportCommand.CreateForDateRangeAsync(today.GetFirstDayOfWeek(), today.GetLastDayOfWeek())
+      : _createReportCommand.CreateForDateAsync(settings.Date ?? today);
   }
 }
