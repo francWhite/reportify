@@ -12,7 +12,8 @@ var config = new ConfigurationBuilder()
 
 var services = new ServiceCollection()
   .Configure<ReportifyOptions>(config)
-  .AddSingleton<ICreateReportCommand, CreateReportCommand>();
+  .AddSingleton<IReportBuilder, ReportBuilder>()
+  .AddSingleton<IReportWriter, ReportWriter>();
 
 var registrar = new TypeRegistrar(services);
 var app = new CommandApp<ReportCommand>(registrar);
