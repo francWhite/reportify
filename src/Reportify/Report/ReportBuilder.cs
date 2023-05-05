@@ -27,13 +27,13 @@ internal class ReportBuilder : IReportBuilder
         new[]
         {
           new Position("Position 1", TimeSpan.FromMinutes(240), 456000, 123000),
-          new Position("Position 2", TimeSpan.FromMinutes(245), 456000, 123000),
+          new Position("Position asdasd 2", TimeSpan.FromMinutes(245), 456000, 123000),
           new Position("Position 3", TimeSpan.FromMinutes(90), 456000, 234000),
-          new Position("Position 4", TimeSpan.FromMinutes(14), 456000, 234000),
+          new Position("Position lll 4", TimeSpan.FromMinutes(14), 456000, 234000),
           new Position("Position 5", TimeSpan.FromMinutes(15), null, 545454),
           new Position("Position 6", TimeSpan.FromMinutes(7), 989888, null),
           new Position("Position 7", TimeSpan.FromMinutes(8), 345432, 123000),
-          new Position("Position 8", TimeSpan.FromMinutes(8), null, null),
+          new Position("Some very very long text 8", TimeSpan.FromMinutes(8), null, null),
         }));
   }
 }
