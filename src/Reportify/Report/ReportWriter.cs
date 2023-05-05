@@ -26,38 +26,52 @@ internal class ReportWriter : IReportWriter
       .ForEach(c => table.AddColumn(c));
 
     dailyReport.Positions
-      .Select(CreateRow)
-      .ForEach(r => table.AddRow(r));
+      .GroupBy(p => p.ErpPosition)
+      .OrderByDescending(g => g.Sum(p => p.Duration))
+      .Select(g => CreateRow(g.Key, g.ToList()))
+      .ForEach(r => table.AddRow(r).AddEmptyRow());
 
     return table;
   }
 
   private static TableTitle CreateTitle(DailyReport dailyReport)
   {
-    var totalDuration = dailyReport.Positions
-      .Select(p => p.Duration)
-      .Aggregate((total, current) => total.Add(current));
-
+    var totalDuration = dailyReport.Positions.Sum(p => p.Duration);
     return new TableTitle($"Report for {dailyReport.Date}. Total: {totalDuration:hh\\:mm}");
   }
 
   private static IEnumerable<TableColumn> CreateColumns()
   {
-    yield return new TableColumn("Activity");
-    yield return new TableColumn("Erp-Contract");
     yield return new TableColumn("Erp-Position");
+    yield return new TableColumn("Activities");
     yield return new TableColumn("Duration (h)");
   }
 
-  private static IEnumerable<IRenderable> CreateRow(Position position)
+  private static IEnumerable<IRenderable> CreateRow(int? erpPosition, IReadOnlyList<Position> positions)
   {
-    yield return new Text(position.Name);
-    yield return new Text(FormatErpNumber(position.ErpContract));
-    yield return new Text(FormatErpNumber(position.ErpPosition));
-    yield return new Markup(FormatDuration(position.Duration));
+    yield return new Text(FormatErpNumber(erpPosition));
+    yield return CreatePositionsTable(positions);
+    yield return new Markup(FormatDuration(positions.Sum(p => p.Duration)));
   }
 
-  private static string FormatErpNumber(int? number) => number == null ? string.Empty : $"{number:000 000}";
+  private static IRenderable CreatePositionsTable(IEnumerable<Position> positions)
+  {
+    var table = new Table()
+      .AddColumns(string.Empty, string.Empty)
+      .Expand()
+      .HideHeaders()
+      .NoBorder();
+
+    positions.ForEach(
+      p => table.AddRow(
+        new Text(p.Name),
+        new Text($"{p.Duration:hh\\:mm}").RightJustified())
+    );
+
+    return table;
+  }
+
+  private static string FormatErpNumber(int? number) => number == null ? "undefined" : $"{number:000 000}";
 
   private static string FormatDuration(TimeSpan duration)
   {
