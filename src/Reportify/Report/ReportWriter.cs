@@ -26,8 +26,9 @@ internal class ReportWriter : IReportWriter
       .ForEach(c => table.AddColumn(c));
 
     dailyReport.Positions
-      .GroupBy(p => p.ErpPosition)
-      .OrderByDescending(g => g.Sum(p => p.Duration))
+      .GroupBy(p => p.ErpPositionId)
+      .OrderByDescending(g => g.Key)
+      .ThenByDescending(g => g.Sum(p => p.Duration))
       .Select(g => CreateRow(g.Key, g.ToList()))
       .ForEach(r => table.AddRow(r).AddEmptyRow());
 
@@ -71,7 +72,7 @@ internal class ReportWriter : IReportWriter
     return table;
   }
 
-  private static string FormatErpNumber(int? number) => number == null ? "undefined" : $"{number:000 000}";
+  private static string FormatErpNumber(int? number) => number == null ? "-" : $"{number:000 000}";
 
   private static string FormatDuration(TimeSpan duration)
   {
