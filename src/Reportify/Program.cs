@@ -4,6 +4,7 @@ using Reportify.Commands;
 using Reportify.Configuration;
 using Reportify.Infrastructure;
 using Reportify.Report;
+using Reportify.Report.ManicTime;
 using Spectre.Console.Cli;
 
 var config = new ConfigurationBuilder()
@@ -12,6 +13,7 @@ var config = new ConfigurationBuilder()
 
 var services = new ServiceCollection()
   .Configure<ReportifyOptions>(config)
+  .AddSingleton<IActivityQuery, ActivityQuery>()
   .AddSingleton<IReportBuilder, ReportBuilder>()
   .AddSingleton<IReportWriter, ReportWriter>();
 
