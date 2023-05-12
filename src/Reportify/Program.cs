@@ -4,6 +4,7 @@ using Reportify.Commands;
 using Reportify.Configuration;
 using Reportify.Infrastructure;
 using Reportify.Report;
+using Reportify.Report.Jira;
 using Reportify.Report.ManicTime;
 using Spectre.Console.Cli;
 
@@ -13,9 +14,11 @@ var config = new ConfigurationBuilder()
 
 var services = new ServiceCollection()
   .Configure<ReportifyOptions>(config)
-  .AddSingleton<IActivityQuery, ActivityQuery>()
   .AddSingleton<IReportBuilder, ReportBuilder>()
-  .AddSingleton<IReportWriter, ReportWriter>();
+  .AddSingleton<IReportWriter, ReportWriter>()
+  .AddSingleton<IActivityQuery, ActivityQuery>()
+  .AddSingleton<IErpPositionEvaluator, ErpPositionEvaluator>()
+  .AddSingleton<IJiraService, JiraService>();
 
 var registrar = new TypeRegistrar(services);
 var app = new CommandApp<ReportCommand>(registrar);
