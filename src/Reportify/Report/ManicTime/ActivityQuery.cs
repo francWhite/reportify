@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Options;
 using Reportify.Configuration;
 
 namespace Reportify.Report.ManicTime;
@@ -8,16 +9,16 @@ internal class ActivityQuery : IActivityQuery
 {
   private readonly ReportifyOptions _options;
 
-  public ActivityQuery(ReportifyOptions options)
+  public ActivityQuery(IOptions<ReportifyOptions> options)
   {
-    _options = options;
+    _options = options.Value;
   }
 
   public async Task<IReadOnlyList<Activity>> GetAsync(DateOnly date,
     CancellationToken cancellationToken = default)
   {
     await using var connection = new SqliteConnection(_options.BuildConnectionString());
-    
+
     var activities = await connection.QueryAsync<Activity>(BuildCommand(date, cancellationToken));
     return activities.ToList();
   }

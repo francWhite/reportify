@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using Reportify.Configuration;
 using Reportify.Report.ManicTime;
 
@@ -15,7 +16,7 @@ public class ActivityQueryTest
       ManicTimeDatabasePath =  Path.Combine(Environment.CurrentDirectory, "Report/ManicTime/manictime.db")
     };
 
-    _sut = new ActivityQuery(options);
+    _sut = new ActivityQuery(Options.Create(options));
   }
 
   [Fact]
