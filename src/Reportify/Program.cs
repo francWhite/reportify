@@ -20,6 +20,8 @@ var services = new ServiceCollection()
   .AddSingleton<IErpPositionEvaluator, ErpPositionEvaluator>()
   .AddSingleton<IJiraService, JiraService>();
 
+services.AddHttpClient<JiraService>();
+
 var registrar = new TypeRegistrar(services);
 var app = new CommandApp<ReportCommand>(registrar);
 
