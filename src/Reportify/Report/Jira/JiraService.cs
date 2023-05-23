@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
@@ -13,22 +14,23 @@ internal class JiraService : IJiraService
   {
     _httpClient = httpClient;
     _httpClient.BaseAddress = new Uri($"{options.Value.JiraUrl}/rest/api/2/issue/");
+    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.Value.JiraAccessToken);
   }
 
   public async Task<int?> GetErpPositionByIssueKey(string issueKey, CancellationToken cancellationToken = default)
   {
-    var test = await _httpClient.GetAsync(issueKey, cancellationToken);
-    if (!test.IsSuccessStatusCode)
+    var result = await _httpClient.GetAsync(issueKey, cancellationToken);
+    if (!result.IsSuccessStatusCode)
     {
       return null;
     }
 
-    var issue = await test.Content.ReadFromJsonAsync<Issue>(cancellationToken: cancellationToken);
-    return issue?.Fields.ErpPosition;
+    var issue = await result.Content.ReadFromJsonAsync<Issue>(cancellationToken: cancellationToken);
+    return (int?)issue?.Fields.ErpPosition;
   }
 }
 
 file sealed record Issue([property: JsonPropertyName("fields")] Fields Fields);
 
 file sealed record Fields([property: JsonPropertyName("customfield_10701")]
-  int? ErpPosition);
+  decimal? ErpPosition);
