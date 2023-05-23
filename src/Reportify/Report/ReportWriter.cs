@@ -66,7 +66,7 @@ internal class ReportWriter : IReportWriter
     positions.ForEach(
       p => table.AddRow(
         new Text(p.Name),
-        new Text($"{p.Duration:hh\\:mm}").RightJustified())
+        new Padder(new Text($"{p.Duration:hh\\:mm}").RightJustified(), new Padding(2,0,0,0)))
     );
 
     return table;

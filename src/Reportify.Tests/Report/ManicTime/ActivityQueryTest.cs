@@ -13,6 +13,7 @@ public class ActivityQueryTest
     var options = new ReportifyOptions
     {
       JiraUrl = string.Empty,
+      JiraAccessToken = string.Empty,
       ManicTimeDatabasePath =  Path.Combine(Environment.CurrentDirectory, "Report/ManicTime/manictime.db")
     };
 
