@@ -27,8 +27,7 @@ internal class ReportWriter : IReportWriter
 
     dailyReport.Positions
       .GroupBy(p => p.ErpPositionId)
-      .OrderByDescending(g => g.Key)
-      .ThenByDescending(g => g.Sum(p => p.Duration))
+      .OrderByDescending(g => g.Sum(p => p.Duration))
       .Select(g => CreateRow(g.Key, g.ToList()))
       .ForEach(r => table.AddRow(r).AddEmptyRow());
 
@@ -48,15 +47,15 @@ internal class ReportWriter : IReportWriter
   private static IEnumerable<TableColumn> CreateColumns()
   {
     yield return new TableColumn("Erp-Position");
-    yield return new TableColumn("Activities");
     yield return new TableColumn("Duration (h)");
+    yield return new TableColumn("Activities");
   }
 
   private static IEnumerable<IRenderable> CreateRow(int? erpPosition, IReadOnlyList<Position> positions)
   {
     yield return new Text(FormatErpNumber(erpPosition));
-    yield return CreatePositionsTable(positions);
     yield return new Markup(FormatDuration(positions.Sum(p => p.Duration)));
+    yield return CreatePositionsTable(positions);
   }
 
   private static IRenderable CreatePositionsTable(IEnumerable<Position> positions)
@@ -67,11 +66,13 @@ internal class ReportWriter : IReportWriter
       .HideHeaders()
       .NoBorder();
 
-    positions.ForEach(
-      p => table.AddRow(
-        new Text(p.Name),
-        new Padder(new Text($"{p.Duration:hh\\:mm}").RightJustified(), new Padding(2, 0, 0, 0)))
-    );
+    positions
+      .OrderByDescending(p => p.Duration)
+      .ForEach(
+        p => table.AddRow(
+          new Text(p.Name),
+          new Padder(new Text($"{p.Duration:hh\\:mm}").RightJustified(), new Padding(2, 0, 0, 0)))
+      );
 
     return table;
   }
