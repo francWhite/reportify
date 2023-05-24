@@ -2,16 +2,14 @@
 
 namespace Reportify.Configuration;
 
-internal static class ReportifyOptionsExtensions
+internal static class ManicTimeOptionsExtensions
 {
-  public static string BuildConnectionString(this ReportifyOptions options)
+  public static string BuildConnectionString(this ManicTimeOptions options)
   {
     //TODO throw if file doesn't exists
-    var dataSource = Environment.ExpandEnvironmentVariables(options.ManicTimeDatabasePath);
-
     var builder = new SqliteConnectionStringBuilder
     {
-      DataSource = dataSource,
+      DataSource = options.DatabasePath,
       Mode = SqliteOpenMode.ReadOnly
     };
 

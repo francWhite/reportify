@@ -9,11 +9,12 @@ using Reportify.Report.ManicTime;
 using Spectre.Console.Cli;
 
 var config = new ConfigurationBuilder()
-  .AddJsonFile("reportify.config.json")
+  .AddReportifyConfiguration()
   .Build();
 
 var services = new ServiceCollection()
-  .Configure<ReportifyOptions>(config)
+  .Configure<JiraOptions>(config.GetSection("Jira"))
+  .Configure<ManicTimeOptions>(config.GetSection("ManicTime"))
   .AddSingleton<IReportBuilder, ReportBuilder>()
   .AddSingleton<IReportWriter, ReportWriter>()
   .AddSingleton<IActivityQuery, ActivityQuery>()

@@ -10,11 +10,9 @@ public class ActivityQueryTest
 
   public ActivityQueryTest()
   {
-    var options = new ReportifyOptions
+    var options = new ManicTimeOptions
     {
-      JiraUrl = string.Empty,
-      JiraAccessToken = string.Empty,
-      ManicTimeDatabasePath =  Path.Combine(Environment.CurrentDirectory, "Report/ManicTime/manictime.db")
+      DatabasePath =  Path.Combine(Environment.CurrentDirectory, "Report/ManicTime/manictime.db")
     };
 
     _sut = new ActivityQuery(Options.Create(options));

@@ -7,9 +7,9 @@ namespace Reportify.Report.ManicTime;
 
 internal class ActivityQuery : IActivityQuery
 {
-  private readonly ReportifyOptions _options;
+  private readonly ManicTimeOptions _options;
 
-  public ActivityQuery(IOptions<ReportifyOptions> options)
+  public ActivityQuery(IOptions<ManicTimeOptions> options)
   {
     _options = options.Value;
   }
