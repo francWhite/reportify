@@ -37,7 +37,11 @@ internal class ReportWriter : IReportWriter
 
   private static TableTitle CreateTitle(DailyReport dailyReport)
   {
-    var totalDuration = dailyReport.Positions.Sum(p => p.Duration);
+    //TODO display no table if no positions exist
+    var totalDuration = dailyReport.Positions.Any()
+      ? dailyReport.Positions.Sum(p => p.Duration)
+      : TimeSpan.Zero;
+
     return new TableTitle($"Report for {dailyReport.Date}. Total: {totalDuration:hh\\:mm}");
   }
 
@@ -66,7 +70,7 @@ internal class ReportWriter : IReportWriter
     positions.ForEach(
       p => table.AddRow(
         new Text(p.Name),
-        new Padder(new Text($"{p.Duration:hh\\:mm}").RightJustified(), new Padding(2,0,0,0)))
+        new Padder(new Text($"{p.Duration:hh\\:mm}").RightJustified(), new Padding(2, 0, 0, 0)))
     );
 
     return table;
