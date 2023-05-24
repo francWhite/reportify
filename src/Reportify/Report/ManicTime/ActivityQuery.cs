@@ -19,22 +19,22 @@ internal class ActivityQuery : IActivityQuery
   {
     await using var connection = new SqliteConnection(_options.BuildConnectionString());
 
-    var activities = await connection.QueryAsync<Activity>(BuildCommand(date, cancellationToken));
+    // workaround because dapper interprets the sum-column type as an byte[] instead of a long if
+    // no rows are returned and finds no matching Activity constructor, thus throwing an exception
+    var countCommand = BuildCommand(Queries.CountActivitiesQuery, date, cancellationToken);
+    var activitiesCount = await connection.QuerySingleAsync<int>(countCommand);
+    if (activitiesCount == 0)
+    {
+      return new List<Activity>();
+    }
+
+    var selectCommand = BuildCommand(Queries.SelectActivitiesQuery, date, cancellationToken);
+    var activities = await connection.QueryAsync<Activity>(selectCommand);
     return activities.ToList();
   }
 
-  private static CommandDefinition BuildCommand(DateOnly date, CancellationToken cancellationToken)
+  private static CommandDefinition BuildCommand(string query, DateOnly date, CancellationToken cancellationToken)
   {
-    const string query = """
-      SELECT grp.name          AS name,
-             SUM(totalseconds) AS totalseconds
-      FROM ar_taglistbyday tag
-               JOIN ar_commongrouplist grp ON tag.commonid = grp.commonid
-      WHERE tag.hour > @startOfDay
-        AND tag.hour < @startOfNextDay
-      GROUP BY tag.commonid;
-      """;
-
     return new CommandDefinition(
       query,
       new
@@ -44,4 +44,25 @@ internal class ActivityQuery : IActivityQuery
       },
       cancellationToken: cancellationToken);
   }
+}
+
+file static class Queries
+{
+  public const string SelectActivitiesQuery = """
+      SELECT grp.name          AS name,
+           SUM(totalseconds) AS totalseconds
+      FROM ar_taglistbyday tag
+           JOIN ar_commongrouplist grp ON tag.commonid = grp.commonid
+      WHERE tag.hour > @startOfDay
+        AND tag.hour < @startOfNextDay
+      GROUP BY tag.commonid;
+      """;
+
+  public const string CountActivitiesQuery = """
+      SELECT COUNT(*)
+      FROM ar_taglistbyday tag
+           JOIN ar_commongrouplist grp ON tag.commonid = grp.commonid
+      WHERE tag.hour > @startOfDay
+        AND tag.hour < @startOfNextDay;
+    """;
 }
