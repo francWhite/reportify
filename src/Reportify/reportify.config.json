@@ -1,5 +1,0 @@
-{
-  "JiraUrl": "https://jira.atlassian.com",
-  "JiraAccessToken": "",
-  "ManicTimeDatabasePath": "%LOCALAPPDATA%\\Finkit\\ManicTime\\ManicTimeReports.db"
-}

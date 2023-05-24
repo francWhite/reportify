@@ -10,11 +10,11 @@ internal class JiraService : IJiraService
 {
   private readonly HttpClient _httpClient;
 
-  public JiraService(HttpClient httpClient, IOptions<ReportifyOptions> options)
+  public JiraService(HttpClient httpClient, IOptions<JiraOptions> options)
   {
     _httpClient = httpClient;
-    _httpClient.BaseAddress = new Uri($"{options.Value.JiraUrl}/rest/api/2/issue/");
-    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.Value.JiraAccessToken);
+    _httpClient.BaseAddress = new Uri($"{options.Value.Url}/rest/api/2/issue/");
+    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.Value.AccessToken);
   }
 
   public async Task<int?> GetErpPositionByIssueKey(string issueKey, CancellationToken cancellationToken = default)
