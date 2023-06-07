@@ -1,4 +1,3 @@
-using System.Text;
 using Reportify.Report;
 using Spectre.Console;
 using Spectre.Console.Cli;
