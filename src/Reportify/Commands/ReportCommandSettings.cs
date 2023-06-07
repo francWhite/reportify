@@ -8,6 +8,7 @@ internal class ReportCommandSettings : CommandSettings
 {
   [Description("Create report for a specified date")]
   [CommandOption("-d|--date <DATE>")]
+  [TypeConverter(typeof(DateOnlyCurrentCultureConverter))]
   public DateOnly? Date { get; init; }
 
   [Description("Create report for the current week")]
