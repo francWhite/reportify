@@ -8,12 +8,17 @@ internal class ReportWriter : IReportWriter
 {
   public void Write(Report report)
   {
-    AnsiConsole.WriteLine();
-    foreach (var dailyReport in report.DailyReports.Where(d => d.Positions.Any()))
+    var relevantReports = report.DailyReports.Where(d => d.Positions.Any()).ToList();
+    if (!relevantReports.Any())
+    {
+      AnsiConsole.MarkupLine("[darkgoldenrod]No activities found![/]");
+      return;
+    }
+
+    foreach (var dailyReport in relevantReports)
     {
       AnsiConsole.Write(CreateTitle(dailyReport));
       AnsiConsole.Write(CreateTable(dailyReport));
-      AnsiConsole.WriteLine();
     }
   }
 
@@ -37,7 +42,9 @@ internal class ReportWriter : IReportWriter
   private static IRenderable CreateTitle(DailyReport dailyReport)
   {
     var totalDuration = dailyReport.Positions.Sum(p => p.Duration);
-    return new Rule($"Report for {dailyReport.Date}. Total: {totalDuration:hh\\:mm}h").LeftJustified();
+    return new Padder(
+      new Rule($"Report for {dailyReport.Date}. Total: {totalDuration:hh\\:mm}h").LeftJustified(),
+      new Padding(0, 1, 0, 0));
   }
 
   private static IEnumerable<TableColumn> CreateColumns()
@@ -76,7 +83,7 @@ internal class ReportWriter : IReportWriter
     return table;
   }
 
-  private static string FormatErpNumber(int? number) => number == null ? "-" : $"[teal]{number:000 000}[/]";
+  private static string FormatErpNumber(int? number) => number == null ? "-" : $"[bold]{number:000 000}[/]";
 
   private static string FormatDuration(TimeSpan duration)
   {
