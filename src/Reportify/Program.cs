@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Reportify.Commands;
 using Reportify.Configuration;
+using Reportify.Configuration.Validation;
 using Reportify.Infrastructure;
 using Reportify.Report;
 using Reportify.Report.Jira;
@@ -19,9 +20,14 @@ var services = new ServiceCollection()
   .AddSingleton<IReportWriter, ReportWriter>()
   .AddSingleton<IActivityQuery, ActivityQuery>()
   .AddSingleton<IErpPositionEvaluator, ErpPositionEvaluator>()
-  .AddSingleton<IJiraService, JiraService>();
+  .AddSingleton<IJiraService, JiraService>()
+  .AddSingleton<IConfigurationValidator, ConfigurationValidator>();
 
 services.AddHttpClient<JiraService>();
+services.AddHttpClient<ConfigurationValidator>();
+
+var configurationValidator = services.BuildServiceProvider().GetRequiredService<IConfigurationValidator>();
+await configurationValidator.ValidateAsync();
 
 var registrar = new TypeRegistrar(services);
 var app = new CommandApp<ReportCommand>(registrar);
