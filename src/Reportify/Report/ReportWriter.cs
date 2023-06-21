@@ -76,7 +76,7 @@ internal class ReportWriter : IReportWriter
       .OrderByDescending(p => p.Duration)
       .ForEach(
         p => table.AddRow(
-          new Markup($"{prefix}{p.Name}"),
+          new Markup($"{prefix}{EscapeMarkup(p.Name)}"),
           new Padder(new Text($"{p.Duration:hh\\:mm}").RightJustified(), new Padding(1, 0, 0, 0)))
       );
 
@@ -90,4 +90,7 @@ internal class ReportWriter : IReportWriter
     var roundedHours = Math.Round(duration.TotalHours * 4, MidpointRounding.ToEven) / 4;
     return $"[bold]{roundedHours:F2}[/] [dim]({duration:hh\\:mm})[/]";
   }
+
+  private static string EscapeMarkup(string input) => input.Replace("[", "(").Replace("]", ")");
+
 }
