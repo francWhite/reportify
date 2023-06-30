@@ -1,4 +1,4 @@
-﻿namespace Reportify.Configuration.Validation;
+﻿namespace Reportify.Configuration;
 
 internal interface IConfigurationValidator
 {
