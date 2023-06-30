@@ -5,15 +5,15 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 using Spectre.Console;
 
-namespace Reportify.Configuration.Validation;
-
-internal sealed record ValidationError(string Message);
+namespace Reportify.Configuration;
 
 internal class ConfigurationValidator : IConfigurationValidator
 {
   private readonly HttpClient _httpClient;
   private readonly ManicTimeOptions _manicTimeOptions;
   private readonly JiraOptions _jiraOptions;
+
+  private sealed record ValidationError(string Message);
 
   public ConfigurationValidator(HttpClient httpClient,
     IOptions<ManicTimeOptions> manicTimeOptions,
@@ -100,9 +100,8 @@ internal class ConfigurationValidator : IConfigurationValidator
       .Select(v => new Padder(new Text($"- {v.Message}"), new Padding(2, 0)))
       .ToList();
 
-    //TODO Write actual path
     AnsiConsole.MarkupLine(
-      "[red]Configuration file [underline]~/.reportify/config.json[/] is invalid, please fix the following errors.[/]");
+      $"[red]Configuration file [underline]{ConfigurationFileInfo.FilePath}[/] is invalid, please fix the following errors.[/]");
     AnsiConsole.Write(new Rows(errorMessages));
     Environment.Exit(1);
   }

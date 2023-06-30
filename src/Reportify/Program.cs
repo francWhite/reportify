@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Reportify.Commands;
 using Reportify.Configuration;
-using Reportify.Configuration.Validation;
 using Reportify.Infrastructure;
 using Reportify.Report;
 using Reportify.Report.Jira;

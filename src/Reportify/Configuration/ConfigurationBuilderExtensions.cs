@@ -8,21 +8,18 @@ namespace Reportify.Configuration;
 
 internal static class ConfigurationBuilderExtensions
 {
-  private const string FileName = ".reportify";
   private const string DefaultDatabasePath = "Finkit\\ManicTime\\ManicTimeReports.db";
   private const string DefaultJiraUrl = "https://jira.atlassian.com";
 
   public static IConfigurationBuilder AddReportifyConfiguration(this IConfigurationBuilder builder)
   {
-    var folderPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-    var filePath = Path.Combine(folderPath, FileName);
-    if (!File.Exists(filePath))
+    if (!File.Exists(ConfigurationFileInfo.FilePath))
     {
-      CreateDefaultConfiguration(filePath);
+      CreateDefaultConfiguration(ConfigurationFileInfo.FilePath);
     }
 
-    var fileProvider = new PhysicalFileProvider(folderPath, ExclusionFilters.None);
-    return builder.AddYamlFile(fileProvider, FileName, false, false);
+    var fileProvider = new PhysicalFileProvider(ConfigurationFileInfo.FolderPath, ExclusionFilters.None);
+    return builder.AddYamlFile(fileProvider, ConfigurationFileInfo.FileName, false, false);
   }
 
   private static void CreateDefaultConfiguration(string filePath)
