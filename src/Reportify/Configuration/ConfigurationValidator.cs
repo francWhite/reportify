@@ -25,12 +25,31 @@ internal class ConfigurationValidator : IConfigurationValidator
 
   public async Task ValidateAsync()
   {
+    //TODO: extract progress writer to reduce duplication
+    await AnsiConsole
+      .Progress()
+      .AutoClear(true)
+      .Columns(new TaskDescriptionColumn(), new SpinnerColumn())
+      .StartAsync(
+        async context =>
+        {
+          var task = context.AddTask("Validating configuration...").IsIndeterminate();
+          task.StartTask();
+
+          var validationErrors = await ValidateConfigurationAsync();
+          task.StopTask();
+
+          WriteValidationErrors(validationErrors);
+        });
+  }
+
+  private async Task<IReadOnlyList<ValidationError>> ValidateConfigurationAsync()
+  {
     var validationErrors = new List<ValidationError?>();
     validationErrors.Add(ValidateManicTimeOptions(_manicTimeOptions.DatabasePath));
     validationErrors.AddRange(ValidateJiraOptions(_jiraOptions.Url, _jiraOptions.AccessToken));
     validationErrors.Add(await ValidateJiraAccess(_jiraOptions.Url, _jiraOptions.AccessToken));
-
-    WriteValidationErrors(validationErrors.OfType<ValidationError>().ToList());
+    return validationErrors.OfType<ValidationError>().ToList();
   }
 
   private static ValidationError? ValidateManicTimeOptions(string databasePath)
