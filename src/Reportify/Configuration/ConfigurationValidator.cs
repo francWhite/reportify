@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
@@ -9,17 +8,17 @@ namespace Reportify.Configuration;
 
 internal class ConfigurationValidator : IConfigurationValidator
 {
-  private readonly HttpClient _httpClient;
+  private readonly IHttpClientFactory _httpClientFactory;
   private readonly ManicTimeOptions _manicTimeOptions;
   private readonly JiraOptions _jiraOptions;
 
   private sealed record ValidationError(string Message);
 
-  public ConfigurationValidator(HttpClient httpClient,
+  public ConfigurationValidator(IHttpClientFactory httpClientFactory,
     IOptions<ManicTimeOptions> manicTimeOptions,
     IOptions<JiraOptions> jiraOptions)
   {
-    _httpClient = httpClient;
+    _httpClientFactory = httpClientFactory;
     _manicTimeOptions = manicTimeOptions.Value;
     _jiraOptions = jiraOptions.Value;
   }
@@ -68,11 +67,8 @@ internal class ConfigurationValidator : IConfigurationValidator
 
     try
     {
-      //TODO: only configure once application-wide
-      _httpClient.BaseAddress = new Uri($"{url}/rest/api/2/");
-      _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-      var result = await _httpClient.GetAsync("mypermissions");
+      using var httpClient = _httpClientFactory.CreateClient(HttpClients.Jira);
+      var result = await httpClient.GetAsync("mypermissions");
       if (result.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized)
       {
         return new ValidationError("Jira access token is invalid");

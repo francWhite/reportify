@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Reportify;
 using Reportify.Commands;
 using Reportify.Configuration;
 using Reportify.Infrastructure;
@@ -20,10 +21,8 @@ var services = new ServiceCollection()
   .AddSingleton<IActivityQuery, ActivityQuery>()
   .AddSingleton<IErpPositionEvaluator, ErpPositionEvaluator>()
   .AddSingleton<IJiraService, JiraService>()
-  .AddSingleton<IConfigurationValidator, ConfigurationValidator>();
-
-services.AddHttpClient<JiraService>();
-services.AddHttpClient<ConfigurationValidator>();
+  .AddSingleton<IConfigurationValidator, ConfigurationValidator>()
+  .AddJiraHttpClient();
 
 var configurationValidator = services.BuildServiceProvider().GetRequiredService<IConfigurationValidator>();
 await configurationValidator.ValidateAsync();
