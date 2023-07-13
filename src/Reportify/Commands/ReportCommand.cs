@@ -17,21 +17,17 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
 
   public override async Task<int> ExecuteAsync(CommandContext commandContext, ReportCommandSettings settings)
   {
-    await AnsiConsole
-      .Progress()
-      .AutoClear(true)
-      .Columns(new TaskDescriptionColumn(), new SpinnerColumn())
-      .StartAsync(
-        async context =>
-        {
-          var task = context.AddTask("Generating report...").IsIndeterminate();
-          task.StartTask();
+    await ConsoleProgress.StartAsync(
+      async context =>
+      {
+        var task = context.AddTask("Generating report...").IsIndeterminate();
+        task.StartTask();
 
-          var report = await BuildReportAsync(settings);
-          task.StopTask();
+        var report = await BuildReportAsync(settings);
+        task.StopTask();
 
-          _reportWriter.Write(report);
-        });
+        _reportWriter.Write(report);
+      });
 
     return 0;
   }
