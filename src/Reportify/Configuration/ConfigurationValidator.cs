@@ -25,22 +25,17 @@ internal class ConfigurationValidator : IConfigurationValidator
 
   public async Task ValidateAsync()
   {
-    //TODO: extract progress writer to reduce duplication
-    await AnsiConsole
-      .Progress()
-      .AutoClear(true)
-      .Columns(new TaskDescriptionColumn(), new SpinnerColumn())
-      .StartAsync(
-        async context =>
-        {
-          var task = context.AddTask("Validating configuration...").IsIndeterminate();
-          task.StartTask();
+    await ConsoleProgress.StartAsync(
+      async context =>
+      {
+        var task = context.AddTask("Validating configuration...").IsIndeterminate();
+        task.StartTask();
 
-          var validationErrors = await ValidateConfigurationAsync();
-          task.StopTask();
+        var validationErrors = await ValidateConfigurationAsync();
+        task.StopTask();
 
-          WriteValidationErrors(validationErrors);
-        });
+        WriteValidationErrors(validationErrors);
+      });
   }
 
   private async Task<IReadOnlyList<ValidationError>> ValidateConfigurationAsync()
