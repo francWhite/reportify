@@ -8,11 +8,13 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
 {
   private readonly IReportBuilder _reportBuilder;
   private readonly IReportWriter _reportWriter;
+  private readonly IReportExporter _reportExporter;
 
-  public ReportCommand(IReportBuilder reportBuilder, IReportWriter reportWriter)
+  public ReportCommand(IReportBuilder reportBuilder, IReportWriter reportWriter, IReportExporter reportExporter)
   {
     _reportBuilder = reportBuilder;
     _reportWriter = reportWriter;
+    _reportExporter = reportExporter;
   }
 
   public override async Task<int> ExecuteAsync(CommandContext commandContext, ReportCommandSettings settings)
@@ -27,6 +29,9 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
         task.StopTask();
 
         _reportWriter.Write(report);
+
+        if (settings.CopyToClipboard)
+          _reportExporter.ExportToClipboard(report);
       });
 
     return 0;

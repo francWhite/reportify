@@ -87,8 +87,8 @@ internal class ReportWriter : IReportWriter
 
   private static string FormatDuration(TimeSpan duration)
   {
-    var roundedHours = Math.Round(duration.TotalHours * 4, MidpointRounding.ToEven) / 4;
-    return $"[bold]{roundedHours:F2}[/] [dim]({duration:hh\\:mm})[/]";
+    var roundedDuration = duration.RoundToQuarterHours();
+    return $"[bold]{roundedDuration:F2}[/] [dim]({duration:hh\\:mm})[/]";
   }
 
   private static string EscapeMarkup(string input) => input.Replace("[", "(").Replace("]", ")");
