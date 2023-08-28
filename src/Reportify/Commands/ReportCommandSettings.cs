@@ -15,6 +15,10 @@ internal class ReportCommandSettings : CommandSettings
   [CommandOption("-w|--week")]
   public bool EntireWeek { get; init; }
 
+  [Description("Copy report in CSV format to clipboard")]
+  [CommandOption("-c|--copy")]
+  public bool CopyToClipboard { get; init; }
+
   public override ValidationResult Validate()
   {
     return Date is not null && EntireWeek
