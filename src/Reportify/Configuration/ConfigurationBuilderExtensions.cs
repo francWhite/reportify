@@ -8,8 +8,7 @@ namespace Reportify.Configuration;
 
 internal static class ConfigurationBuilderExtensions
 {
-  private const string DefaultDatabasePath = "Finkit\\ManicTime\\ManicTimeReports.db";
-  private const string DefaultJiraUrl = "https://jira.atlassian.com";
+  private const string DefaultDatabasePath = @"Finkit\ManicTime\ManicTimeReports.db";
 
   public static IConfigurationBuilder AddReportifyConfiguration(this IConfigurationBuilder builder)
   {
@@ -30,7 +29,7 @@ internal static class ConfigurationBuilderExtensions
     var options = new
     {
       ManicTime = new ManicTimeOptions { DatabasePath = databasePath },
-      Jira = new JiraOptions { Url = DefaultJiraUrl, AccessToken = null! }
+      Jira = new JiraOptions { Url = null!, AccessToken = null! }
     };
 
     var yaml = new SerializerBuilder()
