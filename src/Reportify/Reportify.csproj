@@ -6,6 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>reportify</AssemblyName>
+    <PublishsingleFile>true</PublishsingleFile>
+    <DebugType>embedded</DebugType>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +25,7 @@
     <PackageReference Include="TextCopy" Version="6.2.1" />
     <PackageReference Include="YamlDotNet" Version="13.1.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <InternalsVisibleTo Include="$(AssemblyName).Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
