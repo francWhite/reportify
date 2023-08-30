@@ -4,6 +4,7 @@ on:
     types: [released]
 jobs:
   publish:
+    if: ${{ false }}  # disable until winget manifest is approved
     runs-on: windows-latest
     steps:
       - name: Wait for Release
