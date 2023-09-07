@@ -6,6 +6,10 @@ namespace Reportify.Commands;
 
 internal class ReportCommandSettings : CommandSettings
 {
+  [Description("Prints version information")]
+  [CommandOption("-v|--version")]
+  public bool PrintVersion { get; init; }
+
   [Description("Create report for a specified date")]
   [CommandOption("-d|--date <DATE>")]
   [TypeConverter(typeof(DateOnlyCurrentCultureConverter))]
