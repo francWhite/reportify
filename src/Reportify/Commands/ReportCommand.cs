@@ -1,3 +1,4 @@
+using System.Reflection;
 using Reportify.Report;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -19,6 +20,13 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
 
   public override async Task<int> ExecuteAsync(CommandContext commandContext, ReportCommandSettings settings)
   {
+    return settings.PrintVersion
+      ? PrintVersion()
+      : await ExecuteCommandAsync(settings);
+  }
+
+  private async Task<int> ExecuteCommandAsync(ReportCommandSettings settings)
+  {
     await ConsoleProgress.StartAsync(
       async context =>
       {
@@ -33,6 +41,14 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
         if (settings.CopyToClipboard)
           _reportExporter.ExportToClipboard(report);
       });
+
+    return 0;
+  }
+
+  private static int PrintVersion()
+  {
+    var version = Assembly.GetEntryAssembly().GetInformationalVersion();
+    AnsiConsole.MarkupLine($"[bold]Reportify[/] version [cyan]{version}[/]");
 
     return 0;
   }
