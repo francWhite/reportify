@@ -1,6 +1,7 @@
 using System.Globalization;
+using Reportify.Extensions;
 
-namespace Reportify.Tests;
+namespace Reportify.Tests.Extensions;
 
 public class DateOnlyExtensionsTest
 {

@@ -1,4 +1,5 @@
 using MoreLinq.Extensions;
+using Reportify.Extensions;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 

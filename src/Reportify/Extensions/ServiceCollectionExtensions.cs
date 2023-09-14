@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Reportify.Configuration;
 
-namespace Reportify;
+namespace Reportify.Extensions;
 
 internal static class ServiceCollectionExtensions
 {

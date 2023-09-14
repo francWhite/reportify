@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Reportify;
 using Reportify.Commands;
 using Reportify.Configuration;
 using Reportify.Configuration.Validation;
+using Reportify.Extensions;
 using Reportify.Infrastructure;
 using Reportify.Report;
 using Reportify.Report.Jira;
