@@ -1,4 +1,5 @@
 using System.Reflection;
+using Reportify.Configuration.Validation;
 using Reportify.Report;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -10,47 +11,65 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
   private readonly IReportBuilder _reportBuilder;
   private readonly IReportWriter _reportWriter;
   private readonly IReportExporter _reportExporter;
+  private readonly IConfigurationValidator _configurationValidator;
+  private readonly IValidationErrorWriter _validationErrorWriter;
 
-  public ReportCommand(IReportBuilder reportBuilder, IReportWriter reportWriter, IReportExporter reportExporter)
+  public ReportCommand(IReportBuilder reportBuilder,
+    IReportWriter reportWriter,
+    IReportExporter reportExporter,
+    IConfigurationValidator configurationValidator,
+    IValidationErrorWriter validationErrorWriter)
   {
     _reportBuilder = reportBuilder;
     _reportWriter = reportWriter;
     _reportExporter = reportExporter;
+    _configurationValidator = configurationValidator;
+    _validationErrorWriter = validationErrorWriter;
   }
 
   public override async Task<int> ExecuteAsync(CommandContext commandContext, ReportCommandSettings settings)
   {
-    return settings.PrintVersion
+    var commandResult = settings.PrintVersion
       ? PrintVersion()
       : await ExecuteCommandAsync(settings);
+
+    return (int)commandResult;
   }
 
-  private async Task<int> ExecuteCommandAsync(ReportCommandSettings settings)
+  private async Task<CommandResult> ExecuteCommandAsync(ReportCommandSettings settings)
   {
-    await ConsoleProgress.StartAsync(
+    return await ConsoleProgress.StartAsync(
       async context =>
       {
-        var task = context.AddTask("Generating report...").IsIndeterminate();
-        task.StartTask();
+        var validationErrors = await context.ExecuteTask(
+          "Validating configuration...",
+          () => _configurationValidator.ValidateAsync());
 
-        var report = await BuildReportAsync(settings);
-        task.StopTask();
+        if (validationErrors.Any())
+        {
+          _validationErrorWriter.Write(validationErrors);
+          return CommandResult.Failure;
+        }
+
+        var report = await context.ExecuteTask(
+          "Generating report...",
+          () => BuildReportAsync(settings));
 
         _reportWriter.Write(report);
 
         if (settings.CopyToClipboard)
           _reportExporter.ExportToClipboard(report);
-      });
 
-    return 0;
+        return CommandResult.Success;
+      });
   }
 
-  private static int PrintVersion()
+  private static CommandResult PrintVersion()
   {
     var version = Assembly.GetEntryAssembly().GetInformationalVersion();
     AnsiConsole.MarkupLine($"[bold]Reportify[/] version [cyan]{version}[/]");
 
-    return 0;
+    return CommandResult.Success;
   }
 
   private Task<Report.Report> BuildReportAsync(ReportCommandSettings settings)

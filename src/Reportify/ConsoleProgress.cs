@@ -4,7 +4,7 @@ namespace Reportify;
 
 internal static class ConsoleProgress
 {
-  public static Task StartAsync(Func<ProgressContext, Task> action)
+  public static Task<T> StartAsync<T>(Func<ProgressContext, Task<T>> action)
   {
     return AnsiConsole
       .Progress()

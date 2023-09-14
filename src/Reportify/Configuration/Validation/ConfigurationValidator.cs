@@ -2,49 +2,34 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
-using Spectre.Console;
 
-namespace Reportify.Configuration;
+namespace Reportify.Configuration.Validation;
 
 internal class ConfigurationValidator : IConfigurationValidator
 {
-  private readonly IHttpClientFactory _httpClientFactory;
+  private readonly HttpClient _httpClient;
   private readonly ManicTimeOptions _manicTimeOptions;
   private readonly JiraOptions _jiraOptions;
-
-  private sealed record ValidationError(string Message);
 
   public ConfigurationValidator(IHttpClientFactory httpClientFactory,
     IOptions<ManicTimeOptions> manicTimeOptions,
     IOptions<JiraOptions> jiraOptions)
   {
-    _httpClientFactory = httpClientFactory;
+    _httpClient = httpClientFactory.CreateClient(HttpClients.Jira);
     _manicTimeOptions = manicTimeOptions.Value;
     _jiraOptions = jiraOptions.Value;
   }
 
-  public async Task ValidateAsync()
-  {
-    await ConsoleProgress.StartAsync(
-      async context =>
-      {
-        var task = context.AddTask("Validating configuration...").IsIndeterminate();
-        task.StartTask();
-
-        var validationErrors = await ValidateConfigurationAsync();
-        task.StopTask();
-
-        WriteValidationErrors(validationErrors);
-      });
-  }
-
-  private async Task<IReadOnlyList<ValidationError>> ValidateConfigurationAsync()
+  public async Task<IReadOnlyList<ValidationError>> ValidateAsync()
   {
     var validationErrors = new List<ValidationError?>();
-    validationErrors.Add(ValidateManicTimeOptions(_manicTimeOptions.DatabasePath));
     validationErrors.AddRange(ValidateJiraOptions(_jiraOptions.Url, _jiraOptions.AccessToken));
-    validationErrors.Add(await ValidateJiraAccess(_jiraOptions.Url, _jiraOptions.AccessToken));
-    return validationErrors.OfType<ValidationError>().ToList();
+    validationErrors.Add(await ValidateJiraAccessAsync(_jiraOptions.Url, _jiraOptions.AccessToken));
+    validationErrors.Add(ValidateManicTimeOptions(_manicTimeOptions.DatabasePath));
+
+    return validationErrors
+      .OfType<ValidationError>()
+      .ToList();
   }
 
   private static ValidationError? ValidateManicTimeOptions(string databasePath)
@@ -72,7 +57,7 @@ internal class ConfigurationValidator : IConfigurationValidator
     }
   }
 
-  private async Task<ValidationError?> ValidateJiraAccess(string url, string accessToken)
+  private async Task<ValidationError?> ValidateJiraAccessAsync(string url, string accessToken)
   {
     if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(accessToken))
     {
@@ -81,8 +66,7 @@ internal class ConfigurationValidator : IConfigurationValidator
 
     try
     {
-      using var httpClient = _httpClientFactory.CreateClient(HttpClients.Jira);
-      var result = await httpClient.GetAsync("mypermissions");
+      var result = await _httpClient.GetAsync("mypermissions");
       if (result.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized)
       {
         return new ValidationError("Jira access token is invalid");
@@ -97,23 +81,6 @@ internal class ConfigurationValidator : IConfigurationValidator
     {
       return new ValidationError($"Jira URL is invalid or can't be reached: {url}");
     }
-  }
-
-  private static void WriteValidationErrors(IReadOnlyList<ValidationError> validationErrors)
-  {
-    if (!validationErrors.Any())
-    {
-      return;
-    }
-
-    var errorMessages = validationErrors
-      .Select(v => new Padder(new Text($"- {v.Message}"), new Padding(2, 0)))
-      .ToList();
-
-    AnsiConsole.MarkupLine(
-      $"[red]Configuration file [underline]{ConfigurationFileInfo.FilePath}[/] is invalid, please fix the following errors.[/]");
-    AnsiConsole.Write(new Rows(errorMessages));
-    Environment.Exit(1);
   }
 }
 
