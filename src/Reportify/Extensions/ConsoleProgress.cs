@@ -1,6 +1,6 @@
 ﻿using Spectre.Console;
 
-namespace Reportify;
+namespace Reportify.Extensions;
 
 internal static class ConsoleProgress
 {

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Reportify;
+namespace Reportify.Extensions;
 
 internal static class AssemblyExtensions
 {

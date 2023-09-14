@@ -1,4 +1,6 @@
-﻿namespace Reportify.Tests;
+﻿using Reportify.Extensions;
+
+namespace Reportify.Tests.Extensions;
 
 public class TimeSpanExtensionsTest
 {
