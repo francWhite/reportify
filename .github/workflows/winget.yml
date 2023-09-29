@@ -17,5 +17,6 @@ jobs:
         if: steps.wait-for-release.outputs.conclusion == 'success'
         with:
           identifier: francWhite.reportify
-          token: ${{ secrets.WINGET_TOKEN }}
+          installers-regex: '\.zip$'
           max-versions-to-keep: 5
+          token: ${{ secrets.WINGET_TOKEN }}
