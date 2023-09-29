@@ -7,7 +7,7 @@ namespace Reportify.Configuration.Validation;
 
 internal class ConfigurationValidator : IConfigurationValidator
 {
-  private readonly HttpClient _httpClient;
+  private readonly Lazy<HttpClient> _httpClient;
   private readonly ManicTimeOptions _manicTimeOptions;
   private readonly JiraOptions _jiraOptions;
 
@@ -15,7 +15,7 @@ internal class ConfigurationValidator : IConfigurationValidator
     IOptions<ManicTimeOptions> manicTimeOptions,
     IOptions<JiraOptions> jiraOptions)
   {
-    _httpClient = httpClientFactory.CreateClient(HttpClients.Jira);
+    _httpClient = new Lazy<HttpClient>(() => httpClientFactory.CreateClient(HttpClients.Jira));
     _manicTimeOptions = manicTimeOptions.Value;
     _jiraOptions = jiraOptions.Value;
   }
@@ -66,7 +66,7 @@ internal class ConfigurationValidator : IConfigurationValidator
 
     try
     {
-      var result = await _httpClient.GetAsync("mypermissions");
+      var result = await _httpClient.Value.GetAsync("mypermissions");
       if (result.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized)
       {
         return new ValidationError("Jira access token is invalid");
