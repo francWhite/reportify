@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Net.Mime;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 
@@ -72,6 +73,15 @@ internal class ConfigurationValidator : IConfigurationValidator
         return new ValidationError("Jira access token is invalid");
       }
 
+      var contentTypeIsJson = result.Content.Headers.ContentType?.MediaType == MediaTypeNames.Application.Json;
+      var requestHasBeenRedirected = HostsAreEqual(result.RequestMessage?.RequestUri, new Uri(url)) == false;
+      if (contentTypeIsJson == false && requestHasBeenRedirected)
+      {
+        var unescapedUri = Uri.UnescapeDataString(result.RequestMessage?.RequestUri?.ToString() ?? string.Empty);
+        return new ValidationError(
+          $"Redirect with unexpected content type detected, check if Jira URL is correct or any additional authentication is required. Request Uri: {unescapedUri}");
+      }
+
       var permissions = await result.Content.ReadFromJsonAsync<Permissions>();
       return permissions?.BrowseProjectsPermission.Permission.HavePermission != true
         ? new ValidationError("Provided access token doesn't have permission to browse projects and issues")
@@ -82,6 +92,14 @@ internal class ConfigurationValidator : IConfigurationValidator
       return new ValidationError($"Jira URL is invalid or can't be reached: {url}");
     }
   }
+
+  private static bool HostsAreEqual(Uri? uri1, Uri? uri2) =>
+    Uri.Compare(
+      uri1,
+      uri2,
+      UriComponents.Host,
+      UriFormat.Unescaped,
+      StringComparison.OrdinalIgnoreCase) == 0;
 }
 
 file sealed record Permissions([property: JsonPropertyName("permissions")]
