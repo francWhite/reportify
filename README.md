@@ -51,6 +51,7 @@ USAGE:
 
 OPTIONS:
     -h, --help           Prints help information
+    -v, --version        Prints version information
     -d, --date <DATE>    Create report for a specified date
     -w, --week           Create report for the current week
     -c, --copy           Copy report in CSV format to clipboard
