@@ -5,16 +5,16 @@ namespace Reportify.Report.Jira;
 
 internal class JiraService : IJiraService
 {
-  private readonly HttpClient _httpClient;
+  private readonly Lazy<HttpClient> _httpClient;
 
   public JiraService(IHttpClientFactory httpClientFactory)
   {
-    _httpClient = httpClientFactory.CreateClient(HttpClients.Jira);
+    _httpClient = new Lazy<HttpClient>(() => httpClientFactory.CreateClient(HttpClients.Jira));
   }
 
   public async Task<int?> GetErpPositionByIssueKey(string issueKey, CancellationToken cancellationToken = default)
   {
-    var result = await _httpClient.GetAsync($"issue/{issueKey}", cancellationToken);
+    var result = await _httpClient.Value.GetAsync($"issue/{issueKey}", cancellationToken);
     if (!result.IsSuccessStatusCode)
     {
       return null;
