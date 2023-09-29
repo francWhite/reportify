@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Reportify;
 using Reportify.Commands;
 using Reportify.Configuration;
 using Reportify.Configuration.Validation;
@@ -29,5 +30,6 @@ var services = new ServiceCollection()
 
 var registrar = new TypeRegistrar(services);
 var app = new CommandApp<ReportCommand>(registrar);
+app.Configure(c => c.Settings.ExceptionHandler = ExceptionHandler.Handle);
 
 return await app.RunAsync(args);
