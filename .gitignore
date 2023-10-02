@@ -103,3 +103,5 @@ fabric.properties
 .sonarlint/
 
 # End of https://www.toptal.com/developers/gitignore/api/rider,dotnetcore,sonarqube
+
+*.sln.DotSettings.user
