@@ -33,4 +33,12 @@ public class ActivityQueryTest
         new Activity("Activity 4", 975),
       });
   }
+
+  [Fact]
+  public async Task GetAsync_ShouldReturnNoActivitiesWhenNoneAreRecorded()
+  {
+    var date = new DateOnly(2010, 1, 1);
+    var activities = await _sut.GetAsync(date);
+    activities.Should().BeEmpty();
+  }
 }
