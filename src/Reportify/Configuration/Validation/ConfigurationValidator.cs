@@ -101,12 +101,3 @@ internal class ConfigurationValidator : IConfigurationValidator
       UriFormat.Unescaped,
       StringComparison.OrdinalIgnoreCase) == 0;
 }
-
-file sealed record Permissions([property: JsonPropertyName("permissions")]
-  BrowseProjectsPermission BrowseProjectsPermission);
-
-file sealed record BrowseProjectsPermission([property: JsonPropertyName("BROWSE_PROJECTS")]
-  Permission Permission);
-
-file sealed record Permission([property: JsonPropertyName("havePermission")]
-  bool HavePermission);
