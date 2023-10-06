@@ -10,15 +10,15 @@ internal static class ConfigurationBuilderExtensions
 {
   private const string DefaultDatabasePath = @"Finkit\ManicTime\ManicTimeReports.db";
 
-  public static IConfigurationBuilder AddReportifyConfiguration(this IConfigurationBuilder builder)
+  public static IConfigurationBuilder AddReportifyConfiguration(this IConfigurationBuilder builder, string filePath)
   {
-    if (!File.Exists(ConfigurationFileInfo.FilePath))
-    {
-      CreateDefaultConfiguration(ConfigurationFileInfo.FilePath);
-    }
+    if (!File.Exists(filePath)) CreateDefaultConfiguration(filePath);
 
-    var fileProvider = new PhysicalFileProvider(ConfigurationFileInfo.FolderPath, ExclusionFilters.None);
-    return builder.AddYamlFile(fileProvider, ConfigurationFileInfo.FileName, false, false);
+    var directoryPath = Path.GetDirectoryName(filePath) ?? ConfigurationFileInfo.FolderPath;
+
+
+    var fileProvider = new PhysicalFileProvider(directoryPath, ExclusionFilters.None);
+    return builder.AddYamlFile(fileProvider, Path.GetFileName(filePath), false, false);
   }
 
   private static void CreateDefaultConfiguration(string filePath)

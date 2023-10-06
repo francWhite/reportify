@@ -12,7 +12,7 @@ using Reportify.Report.ManicTime;
 using Spectre.Console.Cli;
 
 var config = new ConfigurationBuilder()
-  .AddReportifyConfiguration()
+  .AddReportifyConfiguration(ConfigurationFileInfo.FilePath)
   .Build();
 
 var services = new ServiceCollection()
