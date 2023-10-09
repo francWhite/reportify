@@ -19,6 +19,13 @@ Reportify is a tool for generating reports based on tracked activities in [Manic
 ### Install using [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) 
 
 `winget install francWhite.reportify`
+
+### Install using [scoop](https://scoop.sh)
+
+`scoop bucket add maple 'https://github.com/kevinboss/maple.git'`
+
+`scoop install reportify`
+
 ### Install manually
 
 Download the latest release from the [releases page](https://github.com/francWhite/reportify/releases) and extract the archive to a folder of your choice.
