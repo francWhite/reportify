@@ -10,7 +10,7 @@ internal class ReportCommandSettings : CommandSettings
   [CommandOption("-v|--version")]
   public bool PrintVersion { get; init; }
 
-  [Description("Create report for a specified date")]
+  [Description("Create report for a specified date, defaults to the current day")]
   [CommandOption("-d|--date <DATE>")]
   [TypeConverter(typeof(DateOnlyCurrentCultureConverter))]
   public DateOnly? Date { get; init; }
