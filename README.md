@@ -1,12 +1,12 @@
 ![logo](doc/img/logo-banner.png)
 
-# Reportify
+# reportify
 
 [![CI](https://github.com/francWhite/reportify/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/francWhite/reportify/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/francWhite/reportify)](https://github.com/francWhite/reportify/releases)
 [![licence](https://img.shields.io/github/license/francWhite/reportify)](https://github.com/francWhite/reportify/blob/main/LICENSE)
 
-Reportify is a tool for generating reports based on tracked activities in [ManicTime](https://www.manictime.com/). It is designed to be used in conjunction with [Jira](https://www.atlassian.com/software/jira) to get the corresponding issue information, but can also be used without Jira.
+reportify is a tool for generating reports based on tracked activities in [ManicTime](https://www.manictime.com/). It is designed to be used in conjunction with [Jira](https://www.atlassian.com/software/jira) to get the corresponding issue information, but can also be used without it.
 
 ## Table of Contents
 
@@ -59,7 +59,7 @@ USAGE:
 OPTIONS:
     -h, --help           Prints help information
     -v, --version        Prints version information
-    -d, --date <DATE>    Create report for a specified date
+    -d, --date <DATE>    Create report for a specified date, defaults to the current day
     -w, --week           Create report for the current week
     -c, --copy           Copy report in CSV format to clipboard
 ```
