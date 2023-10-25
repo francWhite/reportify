@@ -43,8 +43,11 @@ internal class ReportWriter : IReportWriter
   private static IRenderable CreateTitle(DailyReport dailyReport)
   {
     var totalDuration = dailyReport.Positions.Sum(p => p.Duration);
+    var roundedTotalDuration = dailyReport.Positions.Select(p => p.Duration.RoundToQuarterHours()).Sum();
     return new Padder(
-      new Rule($"Report for {dailyReport.Date}. Total: {totalDuration:hh\\:mm}h").LeftJustified(),
+      new Rule(
+          $"Report for {dailyReport.Date}. Total: [bold]{roundedTotalDuration:F2}h[/] [dim]({totalDuration:hh\\:mm}h)[/]")
+        .LeftJustified(),
       new Padding(0, 1, 0, 0));
   }
 
@@ -93,5 +96,4 @@ internal class ReportWriter : IReportWriter
   }
 
   private static string EscapeMarkup(string input) => input.Replace("[", "(").Replace("]", ")");
-
 }
