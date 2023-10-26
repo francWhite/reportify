@@ -46,7 +46,7 @@ internal class ReportWriter : IReportWriter
     var roundedTotalDuration = dailyReport.Positions.Select(p => p.Duration.RoundToQuarterHours()).Sum();
     return new Padder(
       new Rule(
-          $"Report for {dailyReport.Date}. Total: [bold]{roundedTotalDuration:F2}h[/] [dim]({totalDuration:hh\\:mm}h)[/]")
+          $"Report for {dailyReport.Date}. Total: [bold]{roundedTotalDuration:F2}h[/] [dim]({totalDuration:hh\\:mm})[/]")
         .LeftJustified(),
       new Padding(0, 1, 0, 0));
   }
