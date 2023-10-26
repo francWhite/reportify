@@ -18,7 +18,7 @@ reportify is a tool for generating reports based on tracked activities in [Manic
 
 ### Install using [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) 
 
-`winget install reportify`
+`winget install francWhite.reportify`
 
 ### Install using [scoop](https://scoop.sh)
 
