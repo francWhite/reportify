@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Net.Mime;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 
 namespace Reportify.Configuration.Validation;

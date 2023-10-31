@@ -8,14 +8,11 @@ namespace Reportify.Configuration;
 
 internal static class ConfigurationBuilderExtensions
 {
-  private const string DefaultDatabasePath = @"Finkit\ManicTime\ManicTimeReports.db";
-
   public static IConfigurationBuilder AddReportifyConfiguration(this IConfigurationBuilder builder, string filePath)
   {
     if (!File.Exists(filePath)) CreateDefaultConfiguration(filePath);
 
     var directoryPath = Path.GetDirectoryName(filePath) ?? ConfigurationFileInfo.FolderPath;
-
 
     var fileProvider = new PhysicalFileProvider(directoryPath, ExclusionFilters.None);
     return builder.AddYamlFile(fileProvider, Path.GetFileName(filePath), false, false);
@@ -23,12 +20,9 @@ internal static class ConfigurationBuilderExtensions
 
   private static void CreateDefaultConfiguration(string filePath)
   {
-    var localAppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-    var databasePath = Path.Combine(localAppDataFolder, DefaultDatabasePath);
-
     var options = new
     {
-      ManicTime = new ManicTimeOptions { DatabasePath = databasePath },
+      ManicTime = new ManicTimeOptions { DatabasePath = null! },
       Jira = new JiraOptions { Url = null!, AccessToken = null! }
     };
 

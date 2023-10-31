@@ -19,7 +19,7 @@ public class ConfigurationBuilderExtensionsTest
       jiraOptions?.Url.Should().Be(string.Empty);
       jiraOptions?.AccessToken.Should().Be(string.Empty);
       manicTimeOptions.Should().NotBeNull();
-      manicTimeOptions?.DatabasePath.Should().Contain(@"Finkit\ManicTime\ManicTimeReports.db");
+      manicTimeOptions?.DatabasePath.Should().Be(string.Empty);
     }
   }
 
