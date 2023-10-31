@@ -10,6 +10,7 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PublishsingleFile>true</PublishsingleFile>
+    <SelfContained>true</SelfContained>
     <DebugType>embedded</DebugType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>

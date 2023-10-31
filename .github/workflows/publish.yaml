@@ -39,7 +39,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          dotnet publish src/Reportify/Reportify.csproj --self-contained --runtime "${{ matrix.target }}" -c Release -o "${{ steps.build-data.outputs.release_name }}" -p:Version=${{ steps.build-data.outputs.version }}
+          dotnet publish src/Reportify/Reportify.csproj --runtime "${{ matrix.target }}" -c Release -o "${{ steps.build-data.outputs.release_name }}" -p:Version=${{ steps.build-data.outputs.version }}
 
       - name: Package Windows
         shell: bash
