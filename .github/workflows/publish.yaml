@@ -45,6 +45,7 @@ jobs:
         shell: bash
         run: |
           7z a -tzip "${{ steps.build-data.outputs.release_name }}.zip" "./${{ steps.build-data.outputs.release_name }}/*"
+          cp "./${{ steps.build-data.outputs.release_name }}/reportify.exe" .
         if: ${{ matrix.target == 'win-x64'}}
 
       - name: Package Linux
