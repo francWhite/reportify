@@ -12,13 +12,13 @@ internal class ReportWriter : IReportWriter
     var relevantReports = report.DailyReports.Where(d => d.Positions.Any()).ToList();
     if (!relevantReports.Any())
     {
-      AnsiConsole.MarkupLine("[darkgoldenrod]No activities found![/]");
+      AnsiConsole.MarkupLine("[yellow]No activities found![/]");
       return;
     }
 
     foreach (var dailyReport in relevantReports)
     {
-      AnsiConsole.Write(CreateTitle(dailyReport));
+      CreateHeaderInfos(dailyReport).ForEach(AnsiConsole.Write);
       AnsiConsole.Write(CreateTable(dailyReport));
     }
   }
@@ -40,15 +40,32 @@ internal class ReportWriter : IReportWriter
     return table;
   }
 
-  private static IRenderable CreateTitle(DailyReport dailyReport)
+  //TODO: extract calculation sums to dedicated component
+  private static IEnumerable<IRenderable> CreateHeaderInfos(DailyReport dailyReport)
   {
     var totalDuration = dailyReport.Positions.Sum(p => p.Duration);
-    var roundedTotalDuration = dailyReport.Positions.Select(p => p.Duration.RoundToQuarterHours()).Sum();
-    return new Padder(
-      new Rule(
-          $"Report for {dailyReport.Date}. Total: [bold]{roundedTotalDuration:F2}h[/] [dim]({totalDuration:hh\\:mm})[/]")
-        .LeftJustified(),
-      new Padding(0, 1, 0, 0));
+    var roundedTotalDuration = totalDuration.RoundToQuarterHours();
+    var sumOfRoundedDurations = dailyReport.Positions
+      .GroupBy(p => p.ErpPositionId)
+      .Select(g => g.Sum(p => p.Duration))
+      .Select(p => p.RoundToQuarterHours())
+      .Sum();
+    var roundingDeviation = Math.Abs(roundedTotalDuration - sumOfRoundedDurations);
+
+    var ruleMarkup = roundingDeviation > 0
+      ? $"Report for {dailyReport.Date} - Total: [darkorange][bold]{sumOfRoundedDurations:F2}h[/][/] ({totalDuration:hh\\:mm})"
+      : $"Report for {dailyReport.Date} - Total: [bold]{sumOfRoundedDurations:F2}h[/] [dim]({totalDuration:hh\\:mm})[/]";
+
+    yield return new Padder(new Rule(ruleMarkup).LeftJustified(), new Padding(0, 1, 0, 0));
+    if (roundingDeviation == 0) yield break;
+
+    var roundingDeviationInfo =
+      $"[yellow]The sum of all rounded durations ({sumOfRoundedDurations:F2}h) differs from the rounded total duration ({roundedTotalDuration:F2}h) by {roundingDeviation:F2}h.[/]";
+    var roundingDeviationInstruction =
+      "[yellow]Please adjust your report manually so that the total sum adds up again.[/]";
+
+    yield return new Padder(new Markup(roundingDeviationInfo), new Padding(1, 0));
+    yield return new Padder(new Markup(roundingDeviationInstruction), new Padding(1, 0));
   }
 
   private static IEnumerable<TableColumn> CreateColumns()
