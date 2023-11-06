@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Reportify.Extensions;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Reportify;
 
@@ -9,6 +10,12 @@ internal static class ExceptionHandler
 {
   public static int Handle(Exception e)
   {
+    if (e is CommandAppException { Pretty: not null } commandAppException)
+    {
+      AnsiConsole.Write(commandAppException.Pretty);
+      return 1;
+    }
+
     var file = CreateTempFile();
     WriteException(file, e);
 
