@@ -68,7 +68,7 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
   private static CommandResult PrintVersion()
   {
     var version = Assembly.GetEntryAssembly().GetInformationalVersion();
-    AnsiConsole.MarkupLine($"[bold]Reportify[/] version [cyan]{version}[/]");
+    AnsiConsole.MarkupLine($"[bold]reportify[/] version [cyan]{version}[/]");
 
     return CommandResult.Success;
   }
