@@ -18,6 +18,7 @@ public class ReportCommandTest
   private readonly IReportExporter _reportExporter;
   private readonly IConfigurationValidator _configurationValidator;
   private readonly IValidationErrorWriter _validationErrorWriter;
+  private readonly IOutputDataConverter _outputDataConverter;
   private readonly CommandContext _commandContext;
   private readonly TestConsole _testConsole;
 
@@ -28,6 +29,7 @@ public class ReportCommandTest
     _reportExporter = A.Fake<IReportExporter>();
     _configurationValidator = A.Fake<IConfigurationValidator>();
     _validationErrorWriter = A.Fake<IValidationErrorWriter>();
+    _outputDataConverter = A.Fake<IOutputDataConverter>();
     _commandContext = A.Dummy<CommandContext>();
 
     _testConsole = new TestConsole();
@@ -38,7 +40,8 @@ public class ReportCommandTest
       _reportWriter,
       _reportExporter,
       _configurationValidator,
-      _validationErrorWriter);
+      _validationErrorWriter,
+      _outputDataConverter);
   }
 
   [Fact]
@@ -49,7 +52,7 @@ public class ReportCommandTest
     var result = await _sut.ExecuteAsync(_commandContext, settings);
 
     result.Should().Be(0);
-    _testConsole.Output.Should().Contain("Reportify version");
+    _testConsole.Output.Should().Contain("reportify version");
   }
 
   [Fact]
@@ -108,7 +111,7 @@ public class ReportCommandTest
     var result = await _sut.ExecuteAsync(_commandContext, settings);
     result.Should().Be(0);
 
-    A.CallTo(() => _reportExporter.ExportToClipboard(A<Reportify.Report.Report>._))
+    A.CallTo(() => _reportExporter.ExportToClipboard(A<OutputData>._))
       .MustHaveHappenedOnceExactly();
   }
 
@@ -123,7 +126,7 @@ public class ReportCommandTest
     var result = await _sut.ExecuteAsync(_commandContext, settings);
     result.Should().Be(0);
 
-    A.CallTo(() => _reportExporter.ExportToClipboard(A<Reportify.Report.Report>._))
+    A.CallTo(() => _reportExporter.ExportToClipboard(A<OutputData>._))
       .MustNotHaveHappened();
   }
 
@@ -139,10 +142,14 @@ public class ReportCommandTest
     A.CallTo(() => _reportBuilder.BuildAsync(A<DateOnly>._, A<CancellationToken>._))
       .Returns(report);
 
+    var outputData = A.Dummy<OutputData>();
+    A.CallTo(() => _outputDataConverter.Convert(report))
+      .Returns(outputData);
+
     var result = await _sut.ExecuteAsync(_commandContext, settings);
     result.Should().Be(0);
 
-    A.CallTo(() => _reportWriter.Write(report))
+    A.CallTo(() => _reportWriter.Write(outputData))
       .MustHaveHappenedOnceExactly();
   }
 
@@ -160,7 +167,8 @@ public class ReportCommandTest
     var result = await _sut.ExecuteAsync(_commandContext, settings);
     result.Should().Be(0);
 
-    A.CallTo(() => _reportBuilder.BuildAsync(today.GetFirstDayOfWeek(), today.GetLastDayOfWeek(), A<CancellationToken>._))
+    A.CallTo(
+        () => _reportBuilder.BuildAsync(today.GetFirstDayOfWeek(), today.GetLastDayOfWeek(), A<CancellationToken>._))
       .MustHaveHappenedOnceExactly();
   }
 }

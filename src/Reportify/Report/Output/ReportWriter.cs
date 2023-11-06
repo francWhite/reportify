@@ -1,3 +1,4 @@
+using System.Text;
 using MoreLinq.Extensions;
 using Reportify.Extensions;
 using Spectre.Console;
@@ -7,65 +8,58 @@ namespace Reportify.Report.Output;
 
 internal class ReportWriter : IReportWriter
 {
-  public void Write(Report report)
+  public void Write(OutputData outputData)
   {
-    var relevantReports = report.DailyReports.Where(d => d.Positions.Any()).ToList();
-    if (!relevantReports.Any())
+    if (!outputData.DailySummaries.Any())
     {
       AnsiConsole.MarkupLine("[yellow]No activities found![/]");
       return;
     }
 
-    foreach (var dailyReport in relevantReports)
+    foreach (var dailySummary in outputData.DailySummaries)
     {
-      CreateHeaderInfos(dailyReport).ForEach(AnsiConsole.Write);
-      AnsiConsole.Write(CreateTable(dailyReport));
+      CreateHeaderInfos(dailySummary).ForEach(AnsiConsole.Write);
+      AnsiConsole.Write(CreateTable(dailySummary));
     }
   }
 
-  private static Table CreateTable(DailyReport dailyReport)
+  private static Table CreateTable(DailySummary dailySummary)
   {
-    var table = new Table();
+    var table = new Table()
+      .AddColumns(CreateColumns().ToArray());
 
-    CreateColumns()
-      .ForEach(c => table.AddColumn(c));
-
-    dailyReport.Positions
-      .GroupBy(p => p.ErpPositionId)
-      .OrderByDescending(g => g.Sum(p => p.Duration))
-      .Select(g => CreateRow(g.Key, g.ToList()))
+    dailySummary.PositionSummaries
+      .Select(CreateRow)
       .ForEach(r => table.AddRow(r).AddEmptyRow());
 
     table.RemoveRow(table.Rows.Count - 1);
     return table;
   }
 
-  //TODO: extract calculation sums to dedicated component
-  private static IEnumerable<IRenderable> CreateHeaderInfos(DailyReport dailyReport)
+  private static IEnumerable<IRenderable> CreateHeaderInfos(DailySummary dailySummary)
   {
-    var totalDuration = dailyReport.Positions.Sum(p => p.Duration);
-    var roundedTotalDuration = totalDuration.RoundToQuarterHours();
-    var sumOfRoundedDurations = dailyReport.Positions
-      .GroupBy(p => p.ErpPositionId)
-      .Select(g => g.Sum(p => p.Duration))
-      .Select(p => p.RoundToQuarterHours())
-      .Sum();
-    var roundingDeviation = Math.Abs(roundedTotalDuration - sumOfRoundedDurations);
+    var roundedTotalDuration = dailySummary.TotalDuration.RoundToQuarterHours();
+    var roundingDeviation = Math.Abs(roundedTotalDuration - dailySummary.SumOfRoundedDurationsInHours);
 
-    var ruleMarkup = roundingDeviation > 0
-      ? $"Report for {dailyReport.Date} - Total: [darkorange][bold]{sumOfRoundedDurations:F2}h[/][/] ({totalDuration:hh\\:mm})"
-      : $"Report for {dailyReport.Date} - Total: [bold]{sumOfRoundedDurations:F2}h[/] [dim]({totalDuration:hh\\:mm})[/]";
+    var headerMarkup = new StringBuilder()
+      .Append($"Report for {dailySummary.Date} - Total: ")
+      .Append($"[{(roundingDeviation > 0 ? "darkorange" : "bold")}]")
+      .Append($"{dailySummary.SumOfRoundedDurationsInHours:F2}h[/] ")
+      .Append($"[dim]({dailySummary.TotalDuration:hh\\:mm})[/]")
+      .ToString();
 
-    yield return new Padder(new Rule(ruleMarkup).LeftJustified(), new Padding(0, 1, 0, 0));
+    yield return new Padder(new Rule(headerMarkup).LeftJustified(), new Padding(0, 1, 0, 0));
+
     if (roundingDeviation == 0) yield break;
 
-    var roundingDeviationInfo =
-      $"[yellow]The sum of all rounded durations ({sumOfRoundedDurations:F2}h) differs from the rounded total duration ({roundedTotalDuration:F2}h) by {roundingDeviation:F2}h.[/]";
-    var roundingDeviationInstruction =
-      "[yellow]Please adjust your report manually so that the total sum adds up again.[/]";
+    var roundingDeviationInfo = new StringBuilder()
+      .Append($"[yellow]The sum of all rounded durations ({dailySummary.SumOfRoundedDurationsInHours:F2}h) ")
+      .Append($"differs from the rounded total duration ({roundedTotalDuration:F2}h) by {roundingDeviation:F2}h.[/]")
+      .AppendLine()
+      .Append("[yellow]Please adjust your report manually so that the total sum adds up again.[/]")
+      .ToString();
 
     yield return new Padder(new Markup(roundingDeviationInfo), new Padding(1, 0));
-    yield return new Padder(new Markup(roundingDeviationInstruction), new Padding(1, 0));
   }
 
   private static IEnumerable<TableColumn> CreateColumns()
@@ -75,14 +69,14 @@ internal class ReportWriter : IReportWriter
     yield return new TableColumn("Activities");
   }
 
-  private static IEnumerable<IRenderable> CreateRow(int? erpPosition, IReadOnlyList<Position> positions)
+  private static IEnumerable<IRenderable> CreateRow(PositionSummary positionSummary)
   {
-    yield return new Markup(FormatErpNumber(erpPosition));
-    yield return new Markup(FormatDuration(positions.Sum(p => p.Duration)));
-    yield return CreatePositionsTable(positions);
+    yield return new Markup(FormatErpNumber(positionSummary.PositionId));
+    yield return new Markup(FormatDuration(positionSummary.Duration, positionSummary.RoundedDurationInHours));
+    yield return CreateInnerTable(positionSummary.Activities.ToList());
   }
 
-  private static IRenderable CreatePositionsTable(IReadOnlyList<Position> positions)
+  private static IRenderable CreateInnerTable(IReadOnlyCollection<Activity> activities)
   {
     var table = new Table()
       .AddColumns(string.Empty, string.Empty)
@@ -90,11 +84,10 @@ internal class ReportWriter : IReportWriter
       .HideHeaders()
       .NoBorder();
 
-    var multipleItems = positions.Count > 1;
+    var multipleItems = activities.Count > 1;
     var prefix = multipleItems ? "- " : string.Empty;
 
-    positions
-      .OrderByDescending(p => p.Duration)
+    activities
       .ForEach(
         p => table.AddRow(
           new Markup($"{prefix}{EscapeMarkup(p.Name)}"),
@@ -106,11 +99,9 @@ internal class ReportWriter : IReportWriter
 
   private static string FormatErpNumber(int? number) => number == null ? "-" : $"[bold]{number:000 000}[/]";
 
-  private static string FormatDuration(TimeSpan duration)
-  {
-    var roundedDuration = duration.RoundToQuarterHours();
-    return $"[bold]{roundedDuration:F2}[/] [dim]({duration:hh\\:mm})[/]";
-  }
+  private static string FormatDuration(TimeSpan duration, double durationInHours) =>
+    $"[bold]{durationInHours:F2}[/] [dim]({duration:hh\\:mm})[/]";
+
 
   private static string EscapeMarkup(string input) => input.Replace("[", "(").Replace("]", ")");
 }
