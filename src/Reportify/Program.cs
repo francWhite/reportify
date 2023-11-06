@@ -27,6 +27,7 @@ var services = new ServiceCollection()
   .AddSingleton<IJiraService, JiraService>()
   .AddSingleton<IConfigurationValidator, ConfigurationValidator>()
   .AddSingleton<IValidationErrorWriter, ValidationErrorWriter>()
+  .AddSingleton<IOutputDataConverter, OutputDataConverter>()
   .AddJiraHttpClient();
 
 var registrar = new TypeRegistrar(services);

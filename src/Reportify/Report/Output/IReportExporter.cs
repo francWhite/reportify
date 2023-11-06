@@ -2,5 +2,5 @@
 
 internal interface IReportExporter
 {
-  void ExportToClipboard(Report report);
+  void ExportToClipboard(OutputData outputData);
 }

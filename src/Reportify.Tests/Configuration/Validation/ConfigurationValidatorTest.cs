@@ -103,7 +103,7 @@ public class ConfigurationValidatorTest
   {
     _mockHttp
       .When("*/mypermissions")
-      .Throw(Activator.CreateInstance(exceptionType) as Exception);
+      .Throw((Exception)Activator.CreateInstance(exceptionType)!);
 
     var jiraOptions = new JiraOptions { Url = "https://jira.com", AccessToken = "123" };
     var sut = CreateSut(jiraOptions, _emptyManicTimeOptions);

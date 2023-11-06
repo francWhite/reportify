@@ -15,18 +15,21 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
   private readonly IReportExporter _reportExporter;
   private readonly IConfigurationValidator _configurationValidator;
   private readonly IValidationErrorWriter _validationErrorWriter;
+  private readonly IOutputDataConverter _outputDataConverter;
 
   public ReportCommand(IReportBuilder reportBuilder,
     IReportWriter reportWriter,
     IReportExporter reportExporter,
     IConfigurationValidator configurationValidator,
-    IValidationErrorWriter validationErrorWriter)
+    IValidationErrorWriter validationErrorWriter,
+    IOutputDataConverter outputDataConverter)
   {
     _reportBuilder = reportBuilder;
     _reportWriter = reportWriter;
     _reportExporter = reportExporter;
     _configurationValidator = configurationValidator;
     _validationErrorWriter = validationErrorWriter;
+    _outputDataConverter = outputDataConverter;
   }
 
   public override async Task<int> ExecuteAsync(CommandContext commandContext, ReportCommandSettings settings)
@@ -57,10 +60,11 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
           "Generating report...",
           () => BuildReportAsync(settings));
 
-        _reportWriter.Write(report);
+        var outputData = _outputDataConverter.Convert(report);
+        _reportWriter.Write(outputData);
 
         if (settings.CopyToClipboard)
-          _reportExporter.ExportToClipboard(report);
+          _reportExporter.ExportToClipboard(outputData);
 
         return CommandResult.Success;
       });
