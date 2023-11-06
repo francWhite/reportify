@@ -1,4 +1,4 @@
-namespace Reportify.Report;
+namespace Reportify.Report.Output;
 
 internal interface IReportWriter
 {

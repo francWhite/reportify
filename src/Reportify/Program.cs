@@ -9,6 +9,7 @@ using Reportify.Infrastructure;
 using Reportify.Report;
 using Reportify.Report.Jira;
 using Reportify.Report.ManicTime;
+using Reportify.Report.Output;
 using Spectre.Console.Cli;
 
 var config = new ConfigurationBuilder()

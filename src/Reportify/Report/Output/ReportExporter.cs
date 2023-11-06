@@ -3,7 +3,7 @@ using Reportify.Extensions;
 using Spectre.Console;
 using TextCopy;
 
-namespace Reportify.Report;
+namespace Reportify.Report.Output;
 
 internal class ReportExporter : IReportExporter
 {

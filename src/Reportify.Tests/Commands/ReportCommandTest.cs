@@ -2,6 +2,7 @@
 using Reportify.Configuration.Validation;
 using Reportify.Extensions;
 using Reportify.Report;
+using Reportify.Report.Output;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Testing;
