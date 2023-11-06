@@ -3,7 +3,7 @@ using Reportify.Extensions;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace Reportify.Report;
+namespace Reportify.Report.Output;
 
 internal class ReportWriter : IReportWriter
 {
