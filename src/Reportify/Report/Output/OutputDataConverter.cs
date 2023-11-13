@@ -4,7 +4,6 @@ namespace Reportify.Report.Output;
 
 internal class OutputDataConverter : IOutputDataConverter
 {
-  //TODO unit tests (e.g. for rounding, behaviour when no positions, etc.)
   public OutputData Convert(Report report)
   {
     var dailySummaries = report.DailyReports
