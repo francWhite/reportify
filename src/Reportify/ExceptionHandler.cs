@@ -8,18 +8,18 @@ namespace Reportify;
 
 internal static class ExceptionHandler
 {
-  public static int Handle(Exception e)
+  public static int Handle(Exception exception, ITypeResolver? typeResolver)
   {
-    if (e is CommandAppException { Pretty: not null } commandAppException)
+    if (exception is CommandAppException { Pretty: not null } commandAppException)
     {
       AnsiConsole.Write(commandAppException.Pretty);
       return 1;
     }
 
     var file = CreateTempFile();
-    WriteException(file, e);
+    WriteException(file, exception);
 
-    AnsiConsole.MarkupLine($"An unexpected error occurred: [red]{e.Message}[/]");
+    AnsiConsole.MarkupLine($"An unexpected error occurred: [red]{exception.Message}[/]");
     AnsiConsole.MarkupLine("If the error persists, please report it at [blue]https://github.com/francWhite/reportify/issues[/]");
     AnsiConsole.MarkupLine($"Please include the following file in your report: [blue]{file.FullName}[/]");
     return 1;
