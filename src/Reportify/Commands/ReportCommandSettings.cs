@@ -19,7 +19,7 @@ internal class ReportCommandSettings : CommandSettings
   [CommandOption("-w|--week")]
   public bool EntireWeek { get; init; }
 
-  [Description("Create report for the current week")]
+  [Description("Offset in weeks to determine the week used for the report")]
   [CommandOption("-o|--week-offset <OFFSET>")]
   [DefaultValue(0)]
   public int WeekOffset { get; init; }
