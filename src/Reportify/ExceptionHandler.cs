@@ -16,6 +16,12 @@ internal static class ExceptionHandler
       return 1;
     }
 
+    if (exception is CommandRuntimeException commandRuntimeException)
+    {
+      AnsiConsole.MarkupLine($"[red]Error:[/] {commandRuntimeException.Message}");
+      return 1;
+    }
+
     var file = CreateTempFile();
     WriteException(file, exception);
 
