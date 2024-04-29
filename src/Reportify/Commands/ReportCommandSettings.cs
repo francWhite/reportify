@@ -19,14 +19,20 @@ internal class ReportCommandSettings : CommandSettings
   [CommandOption("-w|--week")]
   public bool EntireWeek { get; init; }
 
+  [Description("Create report for the current week")]
+  [CommandOption("-o|--week-offset <OFFSET>")]
+  [DefaultValue(0)]
+  public int WeekOffset { get; init; }
+
   [Description("Copy report in CSV format to clipboard")]
   [CommandOption("-c|--copy")]
   public bool CopyToClipboard { get; init; }
 
   public override ValidationResult Validate()
   {
-    return Date is not null && EntireWeek
-      ? ValidationResult.Error("date and week options are mutually exclusive")
-      : ValidationResult.Success();
+    if (Date is not null && EntireWeek) return ValidationResult.Error("date and week options are mutually exclusive");
+    if (WeekOffset != 0 && !EntireWeek)
+      return ValidationResult.Error("week offset can only be used with the week option");
+    return ValidationResult.Success();
   }
 }
