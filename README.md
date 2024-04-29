@@ -57,11 +57,13 @@ USAGE:
     reportify.dll [OPTIONS]
 
 OPTIONS:
-    -h, --help           Prints help information
-    -v, --version        Prints version information
-    -d, --date <DATE>    Create report for a specified date, defaults to the current day
-    -w, --week           Create report for the current week
-    -c, --copy           Copy report in CSV format to clipboard
+                                  DEFAULT
+    -h, --help                               Prints help information
+    -v, --version                            Prints version information
+    -d, --date <DATE>                        Create report for a specified date, defaults to the current day
+    -w, --week                               Create report for the current week
+    -o, --week-offset <OFFSET>    0          Offset in weeks to determine the week used for the report
+    -c, --copy                               Copy report in CSV format to clipboard
 ```
 
 
