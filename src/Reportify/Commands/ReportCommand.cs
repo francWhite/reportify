@@ -82,8 +82,12 @@ internal class ReportCommand : AsyncCommand<ReportCommandSettings>
   {
     var today = DateOnly.FromDateTime(DateTime.Now);
 
-    return settings.EntireWeek
-      ? _reportBuilder.BuildAsync(today.GetFirstDayOfWeek(), today.GetLastDayOfWeek())
-      : _reportBuilder.BuildAsync(settings.Date ?? today);
+    if (settings.EntireWeek)
+    {
+      var weekDay = today.AddDays(settings.WeekOffset * 7);
+      return _reportBuilder.BuildAsync(weekDay.GetFirstDayOfWeek(), weekDay.GetLastDayOfWeek());
+    }
+
+    return _reportBuilder.BuildAsync(settings.Date ?? today);
   }
 }
