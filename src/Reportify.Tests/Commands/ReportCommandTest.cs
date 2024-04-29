@@ -162,7 +162,25 @@ public class ReportCommandTest
       .Returns(new List<ValidationError>());
 
     // TODO: Use some kind of faked date provider
-    var today = DateOnly.FromDateTime(DateTime.Now);
+    var today = DateOnly.FromDateTime(DateTime.Today);
+
+    var result = await _sut.ExecuteAsync(_commandContext, settings);
+    result.Should().Be(0);
+
+    A.CallTo(
+        () => _reportBuilder.BuildAsync(today.GetFirstDayOfWeek(), today.GetLastDayOfWeek(), A<CancellationToken>._))
+      .MustHaveHappenedOnceExactly();
+  }
+
+  [Fact]
+  public async Task ExecuteAsync_WhenWeekOffsetIsSet_ShouldBuildReportSpecifiedWeek()
+  {
+    var settings = new ReportCommandSettings { EntireWeek = true, WeekOffset = -1 };
+
+    A.CallTo(() => _configurationValidator.ValidateAsync())
+      .Returns(new List<ValidationError>());
+
+    var today = DateOnly.FromDateTime(DateTime.Today).AddDays(-7);
 
     var result = await _sut.ExecuteAsync(_commandContext, settings);
     result.Should().Be(0);
