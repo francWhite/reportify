@@ -34,7 +34,7 @@ Download the latest release from the [releases page](https://github.com/francWhi
 
 ### Configuration
 
-Before you can use Reportify, you need to configure it. This is done by editing the `.reportify` file your user directory which is created on the first start of Reportify. The file is in [YAML](https://yaml.org/) format and contains the following settings:
+Before you can use reportify, you need define some mandatory settings. This is done by editing the `.reportify` file in your user directory which is created on the first start of the application. The [YAML](https://yaml.org/) configuration file contains the following settings:
 
 | Setting                  | Description                          | Example                                |
 |--------------------------|--------------------------------------|----------------------------------------|
@@ -43,14 +43,14 @@ Before you can use Reportify, you need to configure it. This is done by editing 
 | `jira.accsessToken`      | Access token for the Jira instance.  | A1B2C3D4E5F6G                          |
 
 
-Reportify will validate the configuration on startup and informs over missing or invalid settings.
+reportify will validate the configuration on startup and informs over missing or invalid settings.
 
 #### Jira Access Token
 The access token can be generated in Jira under `Profile > Personal Access Tokens > Create token`. Only the BROWSE_PROJECTS permission is required.
 
 ### Commands
 
-Reportify supports generating reports for a specific date or the current week. If no parameters are specified, the report is generated for the current day.
+reportify supports generating reports for a specific date or an entire week. If no parameters are specified, the report is generated for the current day.
 
 ```
 USAGE:
@@ -62,7 +62,7 @@ OPTIONS:
     -v, --version                            Prints version information
     -d, --date <DATE>                        Create report for a specified date, defaults to the current day
     -w, --week                               Create report for the current week
-    -o, --week-offset <OFFSET>    0          Offset in weeks to determine the week used for the report
+    -o, --week-offset <OFFSET>    0          Offset in weeks to determine the week used for the creation of the report
     -c, --copy                               Copy report in CSV format to clipboard
 ```
 
@@ -95,7 +95,7 @@ Reportify uses your local ManicTime database to get the tracked activities. If a
 #([a-zA-Z]+-\\d+)
 ```
 
-If no Jira issue exists but you still want to track the time for a specific position, you can include the position number in the activity description (e.g. `$123456`). The position number is extracted using the following regular expression:
+If no Jira issue exists, but you still want to track the time for a specific position, you can include the position number in the activity description (e.g. `$123456`). The position number is extracted using the following regular expression:
 ```regexp
 \$(\d{6})
 ```
