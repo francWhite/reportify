@@ -100,6 +100,13 @@ If no Jira issue exists, but you still want to track the time for a specific pos
 \$(\d{6})
 ```
 
+If you want to add a comment to the tracked activity you can do so by adding it after writing %, for example `#REP-228 %This is my comment`. The comment is extracted using the follwing regular expression:
+```regexp
+%(?<notes>.*)
+```
+
+Everything after the % will be treated as a comment so `%This is my comment #REP-228` will treat `This is my comment #REP-228` as the comment. Extracting the Jira issue will still work.
+
 
 ## License
 

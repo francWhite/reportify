@@ -8,9 +8,9 @@ internal class ReportBuilder
 
   public Reportify.Report.Report Build() => new(_dailyReports);
 
-  public ReportBuilder WithPosition(DateOnly date, string name, TimeSpan duration, int? positionId)
+  public ReportBuilder WithPosition(DateOnly date, string name, TimeSpan duration, int? positionId, string? note = null)
   {
-    var position = new Position(name, duration, positionId);
+    var position = new Position(name, duration, positionId, note);
 
     var existingDailyReport = _dailyReports.SingleOrDefault(d => d.Date == date);
     if (existingDailyReport is not null)

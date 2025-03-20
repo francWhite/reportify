@@ -1,8 +1,9 @@
+using System.Text.RegularExpressions;
 using Reportify.Report.ManicTime;
 
 namespace Reportify.Report;
 
-internal class ReportBuilder : IReportBuilder
+internal partial class ReportBuilder : IReportBuilder
 {
   private readonly IActivityQuery _activityQuery;
   private readonly IErpPositionEvaluator _erpPositionEvaluator;
@@ -38,9 +39,19 @@ internal class ReportBuilder : IReportBuilder
       async a => new Position(
         a.Name,
         TimeSpan.FromSeconds(a.TotalSeconds),
-        await _erpPositionEvaluator.EvaluateAsync(a.Name, cancellationToken)));
+        await _erpPositionEvaluator.EvaluateAsync(a.Name, cancellationToken),
+        GetNote(a.Name)));
 
     var positions = await Task.WhenAll(positionTasks);
     return new DailyReport(date, positions);
   }
+
+  private static string? GetNote(string name)
+  {
+    var notesMatch = NotesRegex().Match(name);
+    return notesMatch.Success ? notesMatch.Groups["notes"].Value : null;
+  }
+
+  [GeneratedRegex("%(?<notes>.*)")]
+  private static partial Regex NotesRegex();
 }

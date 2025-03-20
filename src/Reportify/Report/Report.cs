@@ -4,4 +4,4 @@ public record Report(IEnumerable<DailyReport> DailyReports);
 
 public record DailyReport(DateOnly Date, IEnumerable<Position> Positions);
 
-public record Position(string Name, TimeSpan Duration, int? ErpPositionId);
+public record Position(string Name, TimeSpan Duration, int? ErpPositionId, string? Note);
