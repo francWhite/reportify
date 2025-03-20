@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Spectre.Console;
+﻿using Spectre.Console;
 using TextCopy;
 
 namespace Reportify.Report.Output;
@@ -17,19 +16,18 @@ internal class ReportExporter : IReportExporter
   private static string BuildCsvString(IEnumerable<DailySummary> dailySummaries)
   {
     var positions = dailySummaries
-      .SelectMany(d => d.PositionSummaries.Select(p => new { d.Date, p.PositionId, p.RoundedDurationInHours }))
+      .SelectMany(d => d.PositionSummaries.Select(p => new { d.Date, p.PositionId, p.RoundedDurationInHours, p.Notes }))
       .Where(position => position.PositionId != null)
       .OrderBy(position => position.Date)
       .ThenByDescending(position => position.RoundedDurationInHours);
 
     return positions
-      .Select(position => FormatPosition(position.Date, position.PositionId, position.RoundedDurationInHours))
+      .Select(position => FormatPosition(position.Date, position.PositionId, position.RoundedDurationInHours, position.Notes))
       .Aggregate((a, b) => $"{a}{Environment.NewLine}{b}");
   }
 
-  private static string FormatPosition(DateOnly date, int? erpPositionId, double duration)
+  private static string FormatPosition(DateOnly date, int? erpPositionId, double duration, string? notes)
   {
-    FormattableString formattable = $"{date:dd.MM.yyyy};{erpPositionId};{duration:F2}";
-    return formattable.ToString(CultureInfo.InvariantCulture);
+    return string.Join(";", date.ToString("dd.MM.yyyy"), erpPositionId, duration.ToString("F2"), notes);
   }
 }

@@ -36,6 +36,7 @@ internal class OutputDataConverter : IOutputDataConverter
           group.Key,
           group.Sum(p => p.Duration),
           group.Sum(p => p.Duration).RoundToQuarterHours(),
+          string.Join(", ", group.Select(p => p.Note).Where(n => !string.IsNullOrWhiteSpace(n))),
           group.Select(p => new Activity(p.Name, p.Duration)).OrderByDescending(a => a.Duration)));
   }
 }
