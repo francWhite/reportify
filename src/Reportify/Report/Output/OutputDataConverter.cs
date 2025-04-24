@@ -30,13 +30,13 @@ internal class OutputDataConverter : IOutputDataConverter
   private static IEnumerable<PositionSummary> ConvertToPositionGroup(IEnumerable<Position> positions)
   {
     return positions
-      .GroupBy(p => p.ErpPositionId)
+      .GroupBy(p => (p.ErpPositionId, p.Note))
       .Select(
         group => new PositionSummary(
-          group.Key,
+          group.Key.ErpPositionId,
           group.Sum(p => p.Duration),
           group.Sum(p => p.Duration).RoundToQuarterHours(),
-          string.Join(", ", group.Select(p => p.Note).Where(n => !string.IsNullOrWhiteSpace(n))),
+          group.Key.Note,
           group.Select(p => new Activity(p.Name, p.Duration)).OrderByDescending(a => a.Duration)));
   }
 }
