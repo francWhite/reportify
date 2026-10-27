@@ -2,6 +2,9 @@
 
 # reportify
 
+> [!NOTE]
+> reportify is now maintained at [kevinboss/reportify](https://github.com/kevinboss/reportify). Please open issues and pull requests there.
+
 [![CI](https://github.com/francWhite/reportify/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/francWhite/reportify/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/francWhite/reportify)](https://github.com/francWhite/reportify/releases)
 [![licence](https://img.shields.io/github/license/francWhite/reportify)](https://github.com/francWhite/reportify/blob/main/LICENSE)
